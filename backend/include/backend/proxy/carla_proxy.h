@@ -75,9 +75,11 @@ class CarlaProxy {
   void Clear();
   std::string GetMetadata();
   std::string GetMapString();
+  std::string GetMapNameString();
   xviz::XVIZBuilder GetUpdateData();
   void SetUpdateMetadataCallback(const std::function<void(const std::string&)>& func);
   void SetTransmissionStreams(const std::unordered_map<std::string, bool>& stream_settings);
+  void PublicAddTrafficElements();
 
  private:
   xviz::XVIZBuilder GetUpdateData(

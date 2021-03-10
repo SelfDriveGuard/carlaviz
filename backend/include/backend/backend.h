@@ -1,6 +1,6 @@
 /*
  * File: backend.h
- * Author: Minjun Xu (mjxu96@gmail.com)
+  * Author: Minjun Xu (mjxu96@gmail.com)
  * File Created: Monday, 7th October 2019 3:19:54 pm
  */
 
@@ -35,6 +35,7 @@ class Backend {
   std::shared_ptr<FrontendProxy> frontend_proxy_{nullptr};
   std::shared_ptr<CarlaProxy> carla_proxy_{nullptr};
   std::string carla_host_{"localhost"};
+  std::string map_name_;
   uint16_t carla_port_{2000u};
   bool is_experimental_{false};
   uint32_t time_interval_{100u};

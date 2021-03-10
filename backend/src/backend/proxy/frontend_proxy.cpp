@@ -74,6 +74,14 @@ bool FrontendClient::SetBinary(bool is_binary) {
 FrontendProxy::FrontendProxy(uint16_t frontend_listen_port)
     : frontend_listen_port_(frontend_listen_port) {}
 
+void FrontendProxy::ChangeSendStatus(bool new_status) {
+  for (const auto& client_pair : frontend_clients_) {
+    auto client_ptr = client_pair.second;
+    client_ptr->ChangeMetadataSendStatus(new_status);
+    client_ptr->ChangeMapStringSendStatus(new_status);
+  }
+}
+
 void FrontendProxy::UpdateMetadata(const std::string& updated_metadata) {
   update_metadata_lock_.lock();
   updated_metadata_without_map_ = updated_metadata;
@@ -190,6 +198,7 @@ void FrontendProxy::SendMetadata(
   if (client->IsMapSend()) {
     boost::beast::ostream(buffer) << updated_metadata_without_map_;
   } else {
+    CARLAVIZ_LOG_INFO("--------------------------------------resend--------------------------------------");
     boost::beast::ostream(buffer) << updated_metadata_with_map_;
   }
   update_metadata_lock_.unlock();

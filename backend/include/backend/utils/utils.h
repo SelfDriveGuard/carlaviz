@@ -157,11 +157,13 @@ class XodrGeojsonConverter {
   static void AddOneLine(
       const std::vector<boost::geometry::model::point<
           double, 3, boost::geometry::cs::cartesian>>& points,
-      const uint32_t& road_id, nlohmann::json& json, const uint32_t& index);
+      const uint32_t& road_id, const int32_t& lane_id, nlohmann::json& json, const uint32_t& index, const std::string& map_name);
   static void AddOneSide(
       const carla::SharedPtr<carla::client::Waypoint>& waypoint,
-      nlohmann::json& json, const uint32_t& index);
-
+      nlohmann::json& json, const uint32_t& index, const std::string& map_name);
+  static uint32_t AddOneSideS(
+      const carla::SharedPtr<carla::client::Waypoint>& waypoint,
+      nlohmann::json& json, const uint32_t& index, const std::string& map_name);
   constexpr static const double precision_{0.5};
 };
 

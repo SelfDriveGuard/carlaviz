@@ -219,7 +219,7 @@ LIBPNG_INCLUDE=${LIB_HEADER_INCLUDE_PATH}
 LIBPNG_LIBPATH=${CARLA_BUILD_FOLDER}
 
 log "Retrieving libpng."
-wget ${LIBPNG_REPO}
+wget ${LIBPNG_REPO} --no-check-certificate
 
 log "Extracting libpng."
 tar -xf libpng-${LIBPNG_VERSION}.tar.xz

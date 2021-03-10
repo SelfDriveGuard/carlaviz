@@ -11,7 +11,7 @@ make backend -j`nproc --all`
 popd > /dev/null
 
 # frontend part
-FRONTEND_DIR=$(cd "$(dirname "$0")"; cd ../frontend; pwd)
-pushd ${FRONTEND_DIR} > /dev/null
-yarn
-popd > /dev/null
+# FRONTEND_DIR=$(cd "$(dirname "$0")"; cd ../frontend; pwd)
+# pushd ${FRONTEND_DIR} > /dev/null
+# yarn
+# popd > /dev/null

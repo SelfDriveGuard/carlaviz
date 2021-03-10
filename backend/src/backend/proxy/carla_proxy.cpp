@@ -454,6 +454,11 @@ std::string CarlaProxy::GetMapString() {
   return utils::XodrGeojsonConverter::GetGeoJsonFromCarlaMap(world_ptr_->GetMap());
 }
 
+std::string CarlaProxy::GetMapNameString() {
+  auto map_ptr_tmp = world_ptr_->GetMap();
+  return map_ptr_tmp->GetName();
+}
+
 std::string CarlaProxy::GetMetadata() {
   // UpdateMetadataBuilder();
   auto xviz_metadata_builder = GetBaseMetadataBuilder();
@@ -1057,6 +1062,10 @@ void CarlaProxy::AddTrafficLights(
   }
 }
 
+void CarlaProxy::PublicAddTrafficElements() {
+  AddTrafficElements();
+}
+
 void CarlaProxy::AddTrafficElements() {
   auto actor_snapshots = world_ptr_->WaitForTick(2s);
   auto map = world_ptr_->GetMap();
@@ -1261,8 +1270,8 @@ carla::geom::Transform CarlaProxy::GetRelativeTransform(
 void CarlaProxy::HandleSensorData(uint32_t id, double rotation_frequency, 
   const std::string& type_id, const std::string& parent_name, 
   carla::SharedPtr<carla::sensor::SensorData> data) {
-
-  if (frame_.load() > (data->GetFrame() + 1)) {
+  
+    if (frame_.load() > (data->GetFrame() + 1)) {
     return;
   }
   

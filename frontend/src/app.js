@@ -1,4 +1,4 @@
-// Copyright (c) 2019 Uber Technologies, Inc.
+// Copyright (c) 2019 Uber Technologies, Inc. 
 //
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -23,7 +23,7 @@
 import React, { PureComponent } from "react";
 import { render } from "react-dom";
 
-import { GeoJsonLayer } from "@deck.gl/layers";
+import { GeoJsonLayer, TextLayer } from "@deck.gl/layers";
 import { COORDINATE_SYSTEM } from "@deck.gl/core";
 import {
   LogViewer,
@@ -46,7 +46,8 @@ const carlaLog = new XVIZLiveLoader({
   bufferLength: 10,
   serverConfig: {
     defaultLogLength: 50,
-    serverUrl: "ws://" + __HOST_IP__ + ":" + __HOST_PORT__
+    // serverUrl: "ws://" + __HOST_IP__ + ":8081",
+    serverUrl: "ws://" + __HOST_IP__ + ":8091"
   },
   worker: true,
   maxConcurrency: 10
@@ -64,7 +65,32 @@ class CarlaViz extends PureComponent {
     settings: {
       viewMode: "PERSPECTIVE",
       showTooltip: true
+    },
+    showHover: false,
+    hoverObject: {
+        roadId: '',
+        laneId: '',
+        x:0,
+        y:0
     }
+  };
+
+  _onLayerHover = (info) => {
+      if(info.object){
+        this.setState({
+          hoverObject: {
+            roadId: info.object.properties.name,
+            laneId: info.object.properties.laneId,
+            x: info.x,
+            y: info.y
+          },
+          showHover: true
+        });
+      }else {
+        this.setState({
+          showHover: false
+        });
+      }
   };
 
   componentDidMount() {
@@ -91,10 +117,33 @@ class CarlaViz extends PureComponent {
             getLineColor: [255, 255, 255, 255],
             getLineWidth: 0.1,
             getRadius: 0.00001,
-            opacity: 10
+            opacity: 10,
+            pickable: true,
+            onClick: info => this._onLayerHover(info),
+            onHover: info => this._onLayerHover(info)
           });
+
+          const textLayer = new TextLayer({
+            id: 'text-layer',
+            data: metadata.map.features,
+            billboard: false,
+            fontFamily: 'sans-serif',
+            sizeUnits: 'meters',
+            coordinateSystem: COORDINATE_SYSTEM.METER_OFFSETS,
+            coordinateOrigin: [0, 0, 0], 
+            pickable: true,
+            getPosition: d => d.geometry.coordinates[1],
+            getText: d => d.properties.name,
+            getColor: [255, 255, 0, 255],
+            getSize: 0.3,
+            getAngle: 0,
+            getTextAnchor: 'middle',
+            getAlignmentBaseline: 'center',          
+          });
+
           this.setState({
             map: mapLayer,
+            textLayer: textLayer,
             metadataReceived: true
           });
           console.log("get map");
@@ -125,9 +174,11 @@ class CarlaViz extends PureComponent {
   };
 
   render() {
-    const { log, map, metadataReceived, settings } = this.state;
+    const { log, map, metadataReceived, settings, textLayer, hoverObject, showHover } = this.state;
     let customLayers = [];
-    if (map) {
+    if(map && textLayer){
+      customLayers = [map, textLayer];
+    }else if(map){
       customLayers = [map];
     }
 
@@ -184,6 +235,37 @@ class CarlaViz extends PureComponent {
               viewMode={VIEW_MODE[settings.viewMode]}
               customLayers={customLayers}
             />
+            <div style={{
+                position: "absolute",
+                zIndex: 1000,
+                background: "#ffffff",
+                pointerEvents: "none",
+                padding: "0 5px",
+                left: 0,
+                top: 0
+              }} >
+                <h4>roadId:{hoverObject.roadId}</h4>
+                <h4>laneId:{hoverObject.laneId}</h4>
+            </div>
+            {showHover ? (
+              <div style={{
+                position: "absolute",
+                zIndex: 1000,
+                background: "#333333",
+                color: "#ffffff",
+                pointerEvents: "none",
+                borderRadius: "5px",
+                padding: "0 5px",
+                left: hoverObject.x,
+                top: hoverObject.y
+              }} >
+                <p>roadId:{hoverObject.roadId}</p>
+                <p>laneId:{hoverObject.laneId}</p>
+            </div>
+            ) : (
+              <div></div>
+            )}
+
             {metadataReceived ? (
               <div id="hud">
                 <MeterWidget

@@ -4,7 +4,7 @@
  * File Created: Monday, 7th October 2019 3:20:10 pm
  */
 #include "backend/backend.h"
-
+#include <stdio.h>
 #include <csignal>
 
 carlaviz::Backend backend;
@@ -43,6 +43,19 @@ void Backend::Run() {
       while (true) {
         // auto start = std::chrono::high_resolution_clock::now();
         auto xviz = carla_proxy_->GetUpdateData();
+        auto map_ptr = carla_proxy_->GetMapNameString();
+        // std::cout << " map carla simulator: " << map_ptr << std::endl;
+        // std::cout << " map carlaViz: " << map_name_ << std::endl;
+        if(map_name_ != map_ptr){       
+          map_name_ = carla_proxy_->GetMapNameString();
+          frontend_proxy_->ChangeSendStatus(false);
+          frontend_proxy_->SetMapString(carla_proxy_->GetMapString());
+          carla_proxy_->PublicAddTrafficElements();
+          frontend_proxy_->UpdateMetadata(carla_proxy_->GetMetadata());
+        }
+        
+        //CARLAVIZ_LOG_INFO("%s", map_ptr);
+        //frontend_proxy_->SetMapString(carla_proxy_->GetMapString());
         // auto data_end = std::chrono::high_resolution_clock::now();
 
         drawing_proxy_->AddDrawings(xviz);
@@ -85,7 +98,8 @@ void Backend::Init() {
   carla_proxy_ = std::make_shared<CarlaProxy>(carla_host_, carla_port_, is_experimental_);
   carla_proxy_->Init();
 
-  drawing_proxy_ = std::make_shared<DrawingProxy>(8089u);
+  // drawing_proxy_ = std::make_shared<DrawingProxy>(8089u);
+  drawing_proxy_ = std::make_shared<DrawingProxy>(8099u);
   drawing_proxy_->StartListen();
 
   if (is_experimental_) {
@@ -100,8 +114,10 @@ void Backend::Init() {
       &CarlaHandler::UpdateMetadata, carla_handler, std::placeholders::_1
     ));
   } else {
-    frontend_proxy_ = std::make_shared<FrontendProxy>(8081u);
+    //frontend_proxy_ = std::make_shared<FrontendProxy>(8081u);
+    frontend_proxy_ = std::make_shared<FrontendProxy>(8091u);
     frontend_proxy_->StartListen();
+    map_name_ = carla_proxy_->GetMapNameString();
     frontend_proxy_->SetMapString(carla_proxy_->GetMapString());
     frontend_proxy_->UpdateMetadata(carla_proxy_->GetMetadata());
     frontend_proxy_->SetStreamSettingsCallback(std::bind(

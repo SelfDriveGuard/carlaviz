@@ -56,13 +56,14 @@ class FrontendProxy {
   void StartListen();
   void SendToAllClients(std::string&& message);
   void SetStreamSettingsCallback(const std::function<void(const std::unordered_map<std::string, bool>&)>& stream_settings_callback);
-
+  void ChangeSendStatus(bool new_status);
+  
  private:
   void Accept();
   void AddClient(boost::asio::ip::tcp::socket socket);
   void SendMetadata(const boost::shared_ptr<FrontendClient>& client);
-
-  uint16_t frontend_listen_port_ = 8081u;
+  //uint16_t frontend_listen_port_ = 8081u;
+  uint16_t frontend_listen_port_ = 8091u;
   std::mutex update_metadata_lock_{};
   std::string updated_metadata_with_map_{""};
   std::string updated_metadata_without_map_{""};
