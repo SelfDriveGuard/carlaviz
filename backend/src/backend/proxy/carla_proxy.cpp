@@ -585,7 +585,9 @@ XVIZBuilder CarlaProxy::GetUpdateData(
       continue;
     }
     for (const auto& attribute : actor_ptr->GetAttributes()) {
-      if (attribute.GetId() == "role_name" && (attribute.GetValue() == "ego" || attribute.GetValue() == "hero")) {
+      // 地图视角跟随：autoware控制的车在carla中的role_name为ego_vehicle
+      // 故：if的condition中 || attribute.GetValue() == "ego_vehicle"可实现地图视角跟随ego车辆
+      if (attribute.GetId() == "role_name" && (attribute.GetValue() == "ego_vehicle" || attribute.GetValue() == "ego" || attribute.GetValue() == "hero")) {
         ego_actor_ = actor_ptr;
         is_ego_found = true;
         break;
