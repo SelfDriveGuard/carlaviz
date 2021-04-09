@@ -1040,7 +1040,11 @@ void CarlaProxy::AddTrafficLights(
   auto id = traffic_light->GetId();
   if (traffic_lights_.find(id) == traffic_lights_.end()) {
     CARLAVIZ_LOG_WARNING("all traffic lights should be inserted first");
-    return;
+    AddTrafficElements();
+    if (traffic_lights_.find(id) == traffic_lights_.end()) {
+      CARLAVIZ_LOG_WARNING("all traffic lights should be inserted first");
+      return;
+    }
   }
 
   auto state = traffic_light->GetState();
@@ -1069,7 +1073,7 @@ void CarlaProxy::PublicAddTrafficElements() {
 }
 
 void CarlaProxy::AddTrafficElements() {
-  auto actor_snapshots = world_ptr_->WaitForTick(2s);
+  auto actor_snapshots = world_ptr_->WaitForTick(30s);
   auto map = world_ptr_->GetMap();
   for (const auto& actor_snapshot : actor_snapshots) {
     auto actor = world_ptr_->GetActor(actor_snapshot.id);
@@ -1082,6 +1086,7 @@ void CarlaProxy::AddTrafficElements() {
       AddStopSignAreas(actor, map);
     }
   }
+  CARLAVIZ_LOG_INFO("------------add traffic elements--------------");
 }
 
 void CarlaProxy::AddTrafficLightAreas(boost::shared_ptr<carla::client::Actor> actor,

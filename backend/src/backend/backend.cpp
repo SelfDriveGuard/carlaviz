@@ -42,18 +42,18 @@ void Backend::Run() {
     } else {
       while (true) {
         // auto start = std::chrono::high_resolution_clock::now();
-        auto xviz = carla_proxy_->GetUpdateData();
         auto map_ptr = carla_proxy_->GetMapNameString();
-        // std::cout << " map carla simulator: " << map_ptr << std::endl;
-        // std::cout << " map carlaViz: " << map_name_ << std::endl;
+        std::cout << " map carla simulator: " << map_ptr << std::endl;
+        std::cout << " map carlaViz: " << map_name_ << std::endl;
         if(map_name_ != map_ptr){       
           map_name_ = carla_proxy_->GetMapNameString();
           frontend_proxy_->ChangeSendStatus(false);
-          frontend_proxy_->SetMapString(carla_proxy_->GetMapString());
-          carla_proxy_->PublicAddTrafficElements();
+          frontend_proxy_->SetMapString(carla_proxy_->GetMapString());         
           frontend_proxy_->UpdateMetadata(carla_proxy_->GetMetadata());
+          carla_proxy_->PublicAddTrafficElements();
         }
-        
+        auto xviz = carla_proxy_->GetUpdateData();
+
         //CARLAVIZ_LOG_INFO("%s", map_ptr);
         //frontend_proxy_->SetMapString(carla_proxy_->GetMapString());
         // auto data_end = std::chrono::high_resolution_clock::now();

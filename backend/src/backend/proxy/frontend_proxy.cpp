@@ -100,6 +100,7 @@ void FrontendProxy::UpdateMetadata(const std::string& updated_metadata) {
 
 void FrontendProxy::SetMapString(const std::string& map_string) {
   map_string_ = map_string;
+  CARLAVIZ_LOG_INFO("------------set map--------------");
 }
 
 void FrontendProxy::StartListen() {
