@@ -43,8 +43,8 @@ void Backend::Run() {
       while (true) {
         // auto start = std::chrono::high_resolution_clock::now();
         auto map_ptr = carla_proxy_->GetMapNameString();
-        std::cout << " map carla simulator: " << map_ptr << std::endl;
-        std::cout << " map carlaViz: " << map_name_ << std::endl;
+        // std::cout << " map carla simulator: " << map_ptr << std::endl;
+        // std::cout << " map carlaViz: " << map_name_ << std::endl;
         if(map_name_ != map_ptr){       
           map_name_ = carla_proxy_->GetMapNameString();
           frontend_proxy_->ChangeSendStatus(false);
